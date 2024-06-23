@@ -57,6 +57,7 @@ public class HeavyGenerator : Generator<Room>
     {
         InitializeRooms();
         ConnectHeavyGates();
+        CreateConnectors();
         _graph.RemoveIsolatedVertices();
         List<Room> connectors = GetRoomsOfType(RoomType.Connector);
         for (int i = 0; i < connectors.Count - 1; ++i)
@@ -66,7 +67,7 @@ public class HeavyGenerator : Generator<Room>
             _graph.AddVertex(cor);
             ConnectRooms(connectors[i], connectors[i + 1], cor);
         }
-        
+
         LevelDescriptionGrid2D<Room> descriptionGrid2D = new LevelDescriptionGrid2D<Room>();
         foreach (Room? vertex in _graph.Vertices)
         {
@@ -81,31 +82,86 @@ public class HeavyGenerator : Generator<Room>
         return descriptionGrid2D;
     }
 
-    public void ConnectHeavyGates()
+    protected void CreateConnectors()
     {
-        Random rand = new Random(this.SavedSeed + 300);
+        Random random = new Random(SavedSeed + 501);
+        GenerateConnector(random);
+    }
+
+    protected Room GenerateConnector(Random random)
+    {
+        Room connector = new Room(_roomCounter++, RoomType.Connector);
+        _graph.AddVertex(connector);
+        int maxDoors = 2;
+        for (int i = 0; i < maxDoors; ++i)
+        {
+            Room corridor = new Room(_roomCounter++, RoomType.Corridor);
+            _graph.AddVertex(corridor);
+            Room scp = GenerateRandomScpRoom(random);
+            ConnectRooms(connector, scp, corridor);
+        }
+
+        return connector;
+    }
+
+    protected Room GenerateRandomScpRoom(Random random)
+    {
+        Room room = new Room(_roomCounter++, GetRandomRoomType(random));
+        _graph.AddVertex(room);
+        return room;
+    }
+
+    public RoomType GetRandomRoomType(Random random)
+    {
+        List<RoomType> allRoomTypes = ((RoomType[])Enum.GetValues(typeof(RoomType))).ToList();
+
+        // Перемешиваем порядок типов комнат случайным образом
+        allRoomTypes.Shuffle(random);
+
+        // Пытаемся вернуть первый доступный тип комнаты
+        foreach (RoomType roomType in allRoomTypes)
+        {
+            if (IsAbleToCreate(roomType))
+            {
+                return roomType;
+            }
+        }
+
+        // Если ни один тип не доступен, возвращаем Misc (по умолчанию)
+        return RoomType.Misc;
+    }
+
+    protected bool IsAbleToCreate(RoomType roomType)
+    {
+        switch (roomType)
+        {
+            case RoomType.Misc:
+                return GetRoomsOfType(roomType).Count() < MiscNum;
+            case RoomType.Safe:
+                return GetRoomsOfType(roomType).Count() < SafeNum;
+            case RoomType.Euclid:
+                return GetRoomsOfType(roomType).Count() < EuclidNum;
+            case RoomType.Keter:
+                return GetRoomsOfType(roomType).Count() < KetersNum;
+            default:
+                return false;
+        }
+    }
+
+    protected void ConnectHeavyGates()
+    {
         // Collect all gates
         List<Room> gates = GetRoomsOfType(RoomType.GateHor);
         gates.AddRange(GetRoomsOfType(RoomType.GateVer));
 
-        List<Room> connectors = GetFreeConnectors();
-        List<Room> corridors = GetFreeCorridors();
-
         foreach (Room gate in gates)
         {
-            Room randConnector = connectors[rand.Next(connectors.Count)];
-            if (rand.Next(0, 2) == 0)
-            {
-                Room randCorridor = corridors[rand.Next(corridors.Count)];
-                ConnectRooms(gate, randConnector, randCorridor);
-                corridors.Remove(randCorridor);
-            }
-            else
-            {
-                ConnectRooms(gate, randConnector);
-            }
+            Room connector = new Room(_roomCounter++, RoomType.Connector);
+            _graph.AddVertex(connector);
 
-            corridors.Remove(randConnector);
+            Room corridor = new Room(_roomCounter++, RoomType.Corridor);
+            _graph.AddVertex(corridor);
+            ConnectRooms(gate, connector, corridor);
         }
     }
 
@@ -114,12 +170,6 @@ public class HeavyGenerator : Generator<Room>
     {
         _roomCounter = 0;
         _graph = new();
-        AddRooms(RoomType.Keter, KetersNum);
-        AddRooms(RoomType.Euclid, EuclidNum);
-        AddRooms(RoomType.Safe, SafeNum);
-        AddRooms(RoomType.Misc, MiscNum);
-        AddRooms(RoomType.Connector, ConnectorsNum);
-        AddRooms(RoomType.Corridor, _corridorsNum);
         AddRooms(RoomType.GateVer, GatesNum);
         AddRooms(RoomType.GateHor, GatesNum);
     }
