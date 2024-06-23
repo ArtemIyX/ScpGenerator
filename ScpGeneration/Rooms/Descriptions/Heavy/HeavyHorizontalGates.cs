@@ -1,9 +1,9 @@
 ﻿using Edgar.GraphBasedGenerator.Grid2D;
-using ScpGeneration.Rooms.Templates.Basic.Connectors;
+using ScpGeneration.Rooms.Templates.Basic.Gates;
 
 namespace ScpGeneration.Rooms.Descriptions.Heavy;
 
-public class HeavyConnectors : IRoomDescription
+public class HeavyHorizontalGates : IRoomDescription
 {
     public RoomDescriptionGrid2D Get()
     {
@@ -11,10 +11,7 @@ public class HeavyConnectors : IRoomDescription
             isCorridor: false,
             roomTemplates:
             [
-                /*new ConnectorA().Get(),
-                new ConnectorB().Get(),
-                new ConnectorC().Get(),*/
-                new ConnectorD().Get()
+                new GateHorizontal().Get()
             ]);
     }
 }

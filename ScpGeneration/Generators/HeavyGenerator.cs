@@ -48,11 +48,12 @@ public class HeavyGenerator(int seed) : Generator<int>(seed)
         RoomDescriptionGrid2D heavyRooms = new HeavyRooms().Get();
         RoomDescriptionGrid2D heavyConnectors = new HeavyConnectors().Get();
         RoomDescriptionGrid2D corridors = new HeavyCorridors().Get();
+        RoomDescriptionGrid2D vertGates = new HeavyVerticalGates().Get();
+        RoomDescriptionGrid2D horGates = new HeavyHorizontalGates().Get();
         levelDescription.AddRoom(1, heavyRooms);
         levelDescription.AddRoom(2, heavyRooms);
         levelDescription.AddRoom(3, heavyRooms);
         levelDescription.AddRoom(4, heavyRooms);
-        
         levelDescription.AddRoom(0, heavyConnectors);
         
         levelDescription.AddConnection(1, 0);
