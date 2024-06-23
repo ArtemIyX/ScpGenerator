@@ -12,13 +12,13 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        try
-        {
+        /*try
+        {*/
             IComposer composer = new Composer();
 
             int seed = 0;
             seed = new Random().Next(int.MaxValue - 1);
-            Generator<int> gen = new HeavyGenerator(seed);
+            Generator<Room> gen = new HeavyGenerator(seed);
             var layout = gen.GenerateLayout();
             composer.SavePng(layout,
                 new DungeonDrawerOptions()
@@ -31,10 +31,11 @@ internal class Program
                 },
                 "layout.png");
             composer.SaveJson(layout, "layout.json");
-        }
+            Console.WriteLine($"{seed} - OK");
+        /*}
         catch (Exception ex)
         {
             Console.WriteLine("Error: " + ex.Message);
-        }
+        }*/
     }
 }
