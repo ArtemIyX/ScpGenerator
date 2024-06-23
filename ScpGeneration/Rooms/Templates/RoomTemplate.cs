@@ -2,7 +2,11 @@
 
 namespace ScpGeneration.Rooms.Templates;
 
-public interface IRoomTemplate
+public abstract class RoomTemplate
 {
-    public RoomTemplateGrid2D Get();
+    public string GetName()
+    {
+        return this.GetType().Name;
+    }
+    public abstract RoomTemplateGrid2D Get();
 }

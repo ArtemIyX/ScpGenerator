@@ -1,5 +1,5 @@
 ﻿using Edgar.GraphBasedGenerator.Grid2D;
-using ScpGeneration.Rooms.Templates.Heavy.Corridors;
+using ScpGeneration.Rooms.Templates.Basic.Corridors;
 
 namespace ScpGeneration.Rooms.Descriptions.Heavy;
 
@@ -11,7 +11,10 @@ public class HeavyCorridors : IRoomDescription
             isCorridor: true,
             roomTemplates:
             [
-                new HeavyCorridorA().Get()
+                new CorridorA().Get(),
+                new CorridorB().Get(),
+                new CorridorC().Get(),
+                new CorridorD().Get()
             ]);
     }
 }

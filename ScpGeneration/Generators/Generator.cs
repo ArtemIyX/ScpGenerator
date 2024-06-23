@@ -5,15 +5,19 @@ namespace ScpGeneration.Generators;
 public abstract class Generator<TRoom>
 {
     public Random Random { get; private set; }
+    public int SavedSeed { get; private set; }
 
     public Generator()
     {
-        Random = new Random();
+        Random rand = new Random();
+        SavedSeed = rand.Next();
+        Random = new Random(SavedSeed);
     }
 
     public Generator(int seed)
     {
-        Random = new Random(seed);
+        SavedSeed = seed;
+        Random = new Random(SavedSeed);
     }
 
     public LayoutGrid2D<TRoom> GenerateLayout()

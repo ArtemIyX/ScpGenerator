@@ -2,7 +2,7 @@
 using Edgar.GraphBasedGenerator.Common;
 using Edgar.GraphBasedGenerator.Grid2D;
 
-namespace ScpGeneration.Rooms.Templates.Heavy.Corridors;
+namespace ScpGeneration.Rooms.Templates.Basic.Corridors;
 
 /*
  * ====
@@ -10,9 +10,9 @@ namespace ScpGeneration.Rooms.Templates.Heavy.Corridors;
  * ====
  */
 
-public class HeavyCorridorA : IRoomTemplate
+public class CorridorA : RoomTemplate
 {
-    public RoomTemplateGrid2D Get()
+    public override RoomTemplateGrid2D Get()
     {
         PolygonGrid2D? corridorOutline = PolygonGrid2D.GetRectangle(1, 1);
         ManualDoorModeGrid2D corridorDoors = new ManualDoorModeGrid2D([
@@ -21,7 +21,7 @@ public class HeavyCorridorA : IRoomTemplate
             ]
         );
 
-        return new RoomTemplateGrid2D(corridorOutline, corridorDoors,this.GetType().Name,
+        return new RoomTemplateGrid2D(corridorOutline, corridorDoors, GetName(),
             RoomTemplateRepeatMode.AllowRepeat,
             allowedTransformations: TransformationGrid2DHelper.GetRotations());
     }
