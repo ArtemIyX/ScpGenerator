@@ -1,9 +1,9 @@
 ﻿using Edgar.GraphBasedGenerator.Grid2D;
 using ScpGeneration.Rooms.Templates.Basic.Room;
 
-namespace ScpGeneration.Rooms.Descriptions.Heavy;
+namespace ScpGeneration.Rooms.Descriptions.Heavy.SCP;
 
-public class HeavyRooms : IRoomDescription
+public class HeavyKeter: IRoomDescription
 {
     public RoomDescriptionGrid2D Get()
     {
@@ -11,7 +11,7 @@ public class HeavyRooms : IRoomDescription
             isCorridor: false,
             roomTemplates:
             [
-                new HeavyMiscRoom().Get()
+                new HeavyKeterRoom().Get()
             ]);
     }
 }

@@ -60,27 +60,7 @@ public class HeavyGenerator(int seed) : Generator<int>(seed)
         levelDescription.AddConnection(2, 0);
         levelDescription.AddConnection(3, 0);
         levelDescription.AddConnection(4, 0);
-        /*UndirectedAdjacencyListGraph<int> graph = GenerateRandomGraph(2, 1);
-        
-        foreach (var room in graph.Vertices)
-        {
-            levelDescription.AddRoom(room, heavyRooms);
-        }
 
-        var corridorCounter = graph.VerticesCount;
-
-       
-        foreach (var connection in graph.Edges)
-        {
-            // We manually insert a new room between each pair of neighboring rooms in the graph
-            levelDescription.AddRoom(corridorCounter, corridors);
-            // And instead of connecting the rooms directly, we connect them to the corridor room
-            levelDescription.AddConnection(connection.From, corridorCounter);
-            levelDescription.AddConnection(connection.To, corridorCounter);
-            corridorCounter++;
-        }*/
-
-        //levelDescription.MinimumRoomDistance = 1;
 
         return levelDescription;
     }
