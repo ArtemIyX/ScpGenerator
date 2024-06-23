@@ -11,9 +11,9 @@ public class HeavyConnectors : IRoomDescription
             isCorridor: false,
             roomTemplates:
             [
-                /*new ConnectorA().Get(),
+                new ConnectorA().Get(),
                 new ConnectorB().Get(),
-                new ConnectorC().Get(),*/
+                new ConnectorC().Get(),
                 new ConnectorD().Get()
             ]);
     }

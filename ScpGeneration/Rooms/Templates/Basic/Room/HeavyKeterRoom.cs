@@ -8,8 +8,10 @@ public partial class HeavyEuclidRoom : RoomTemplate
 {
     public override RoomTemplateGrid2D Get()
     {
-        PolygonGrid2D? outline = PolygonGrid2D.GetRectangle(10, 8);
-        SimpleDoorModeGrid2D doors = new SimpleDoorModeGrid2D(doorLength: 1, cornerDistance: 1);
+        PolygonGrid2D? outline = PolygonGrid2D.GetRectangle(20, 16);
+        IDoorModeGrid2D doors = new ManualDoorModeGrid2D([
+            new DoorGrid2D(new Vector2Int(0, 5), new Vector2Int(0, 6))
+        ]);
 
         return new RoomTemplateGrid2D(outline, doors, GetName(),
             RoomTemplateRepeatMode.AllowRepeat,

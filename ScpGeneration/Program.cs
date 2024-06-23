@@ -4,6 +4,7 @@ using Edgar.GraphBasedGenerator.Grid2D;
 using Edgar.GraphBasedGenerator.Common;
 using System.Diagnostics;
 using Edgar.Graphs;
+using ScpGeneration.Data;
 using ScpGeneration.Generators;
 using ScpGeneration.Utils;
 
@@ -26,6 +27,7 @@ internal class Program
                     Width = 2000,
                     ShowRoomNames = true,
                     EnableShading = false,
+                    FontSize = 0.5f
                 },
                 "layout.png");
             composer.SaveJson(layout, "layout.json");

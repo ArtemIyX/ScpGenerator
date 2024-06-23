@@ -1,67 +1,82 @@
 ﻿using Edgar.GraphBasedGenerator.Grid2D;
+using Edgar.GraphBasedGenerator.Grid2D.Drawing;
 using Edgar.Graphs;
+using ScpGeneration.Data;
 using ScpGeneration.Rooms.Descriptions.Heavy;
+using ScpGeneration.Rooms.Descriptions.Heavy.SCP;
 
 namespace ScpGeneration.Generators;
 
-public class HeavyGenerator(int seed) : Generator<int>(seed)
+public class HeavyGenerator : Generator<int>
 {
-    public static Edgar.Graphs.UndirectedAdjacencyListGraph<int> GenerateRandomGraph(int n, int m)
+    private const int KetersNum = 2;
+    private const int EuclidNum = 6;
+    private const int SafeNum = 2;
+    private const int MiscNum = 2;
+    private const int ConnectorsNum = 8;
+    private readonly Range<int> _corridorsRange = new(16, 21);
+    private readonly int _corridorsNum;
+    private const int GatesNum = 2;
+
+    readonly RoomDescriptionGrid2D _miscRooms = new HeavyRooms().Get();
+    readonly RoomDescriptionGrid2D _heavyConnectors = new HeavyConnectors().Get();
+    readonly RoomDescriptionGrid2D _corridors = new HeavyCorridors().Get();
+    readonly RoomDescriptionGrid2D _vertGates = new HeavyVerticalGates().Get();
+    readonly RoomDescriptionGrid2D _horGates = new HeavyHorizontalGates().Get();
+
+    readonly RoomDescriptionGrid2D _safe = new HeavySafe().Get();
+    readonly RoomDescriptionGrid2D _euclid = new HeavyEuclid().Get();
+    readonly RoomDescriptionGrid2D _keter = new HeavyKeter().Get();
+
+    private int _roomCounter;
+    private LevelDescriptionGrid2D<int> _levelDescription;
+    private Dictionary<int, RoomType> _roomTypes;
+
+    public HeavyGenerator(int seed) : base(seed)
     {
-        var random = new Random();
-        var graph = new Edgar.Graphs.UndirectedAdjacencyListGraph<int>();
-
-        // Add all vertices
-        for (int i = 0; i < n; i++)
-        {
-            graph.AddVertex(i);
-        }
-
-        // Add random edges
-        for (int i = 0; i < n; i++)
-        {
-            int connections = random.Next(1, m + 1); // Number of connections for this vertex
-
-            var potentialVertices = Enumerable.Range(0, n).Where(v => v != i).ToList();
-
-            for (int j = 0; j < connections; j++)
-            {
-                if (potentialVertices.Count == 0)
-                    break;
-
-                int randomIndex = random.Next(potentialVertices.Count);
-                int vertexToConnect = potentialVertices[randomIndex];
-                potentialVertices.RemoveAt(randomIndex);
-
-                if (!graph.HasEdge(i, vertexToConnect))
-                {
-                    graph.AddEdge(i, vertexToConnect);
-                }
-            }
-        }
-
-        return graph;
+        _corridorsNum = new Random(seed + 100).Next(_corridorsRange.Minimum, _corridorsRange.Maximum);
+        _roomCounter = 0;
+        _levelDescription = new LevelDescriptionGrid2D<int>();
+        _roomTypes = [];
     }
+
     public override LevelDescriptionGrid2D<int> GetLevelDescription()
     {
-        LevelDescriptionGrid2D<int> levelDescription = new LevelDescriptionGrid2D<int>();
-        RoomDescriptionGrid2D heavyRooms = new HeavyRooms().Get();
-        RoomDescriptionGrid2D heavyConnectors = new HeavyConnectors().Get();
-        RoomDescriptionGrid2D corridors = new HeavyCorridors().Get();
-        RoomDescriptionGrid2D vertGates = new HeavyVerticalGates().Get();
-        RoomDescriptionGrid2D horGates = new HeavyHorizontalGates().Get();
-        levelDescription.AddRoom(1, heavyRooms);
-        levelDescription.AddRoom(2, heavyRooms);
-        levelDescription.AddRoom(3, heavyRooms);
-        levelDescription.AddRoom(4, heavyRooms);
-        levelDescription.AddRoom(0, heavyConnectors);
-        
-        levelDescription.AddConnection(1, 0);
-        levelDescription.AddConnection(2, 0);
-        levelDescription.AddConnection(3, 0);
-        levelDescription.AddConnection(4, 0);
+        InitializeRooms();
+        return _levelDescription;
+    }
 
+    protected void InitializeRooms()
+    {
+        _levelDescription = new LevelDescriptionGrid2D<int>();
+        _roomCounter = 0;
+        _roomTypes = [];
+        AddRooms(RoomType.Keter, KetersNum, _keter);
+        AddRooms(RoomType.Euclid, EuclidNum, _euclid);
+        AddRooms(RoomType.Safe, SafeNum, _safe);
+        AddRooms(RoomType.Misc, MiscNum, _miscRooms);
+        AddRooms(RoomType.Connector, ConnectorsNum, _heavyConnectors);
+        AddRooms(RoomType.Corridor, _corridorsNum, _corridors);
+        AddRooms(RoomType.GateVer, GatesNum, _vertGates);
+        AddRooms(RoomType.GateHor, GatesNum, _horGates);
+    }
 
-        return levelDescription;
+    protected void AddRooms(RoomType roomType, int n, RoomDescriptionGrid2D desc)
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            _levelDescription.AddRoom(_roomCounter++, desc);
+            _roomTypes.TryAdd(_roomCounter, roomType);
+        }
+    }
+
+    protected RoomType GetRoomType(int id)
+    {
+        return _roomTypes[id];
+    }
+
+    public RoomId MakeRoomId(int id, string name)
+    {
+        return new RoomId(id, name);
     }
 }

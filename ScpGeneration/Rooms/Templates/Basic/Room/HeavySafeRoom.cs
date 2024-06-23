@@ -8,7 +8,7 @@ public class HeavySafeRoom : RoomTemplate
 {
     public override RoomTemplateGrid2D Get()
     {
-        PolygonGrid2D? outline = PolygonGrid2D.GetRectangle(4, 4);
+        PolygonGrid2D? outline = PolygonGrid2D.GetRectangle(8, 8);
         SimpleDoorModeGrid2D doors = new SimpleDoorModeGrid2D(doorLength: 1, cornerDistance: 1);
 
         return new RoomTemplateGrid2D(outline, doors, GetName(),
