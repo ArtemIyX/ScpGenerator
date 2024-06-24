@@ -75,7 +75,7 @@ public class HeavyGenerator : Generator<Room>
 
         (Room first, Room second, Room Mid) leftBranch = GenerateLeftBranch(random);
         Room rightBranch = GenerateRightBranch(random);
-        ConnectRooms(leftBranch.Mid, rightBranch);
+        ConnectBranches(leftBranch.Mid, rightBranch);
     }
 
     protected void ConnectBranches(Room leftBranch, Room rightBranch)
