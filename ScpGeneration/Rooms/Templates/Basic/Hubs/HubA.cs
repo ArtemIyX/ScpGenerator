@@ -2,14 +2,14 @@
 using Edgar.GraphBasedGenerator.Common;
 using Edgar.GraphBasedGenerator.Grid2D;
 
-namespace ScpGeneration.Rooms.Templates.Basic.Room;
+namespace ScpGeneration.Rooms.Templates.Basic.Hubs;
 
-public class HeavySafeRoom : RoomTemplate
+public class HubA : RoomTemplate
 {
     public override RoomTemplateGrid2D Get()
     {
-        PolygonGrid2D? outline = PolygonGrid2D.GetRectangle(6, 5);
-        SimpleDoorModeGrid2D doors = new SimpleDoorModeGrid2D(doorLength: 1, cornerDistance: 1);
+        PolygonGrid2D? outline = PolygonGrid2D.GetSquare(9);
+        SimpleDoorModeGrid2D doors = new SimpleDoorModeGrid2D(doorLength: 1, cornerDistance: 2);
 
         return new RoomTemplateGrid2D(outline, doors, GetName(),
             RoomTemplateRepeatMode.AllowRepeat,

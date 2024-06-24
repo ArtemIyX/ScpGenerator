@@ -14,10 +14,10 @@ public class CorridorA : RoomTemplate
 {
     public override RoomTemplateGrid2D Get()
     {
-        PolygonGrid2D? corridorOutline = PolygonGrid2D.GetRectangle(1, 1);
+        PolygonGrid2D? corridorOutline = PolygonGrid2D.GetRectangle(4, 2);
         ManualDoorModeGrid2D corridorDoors = new ManualDoorModeGrid2D([
                 new DoorGrid2D(new Vector2Int(0, 0), new Vector2Int(0, 1)),
-                new DoorGrid2D(new Vector2Int(1, 0), new Vector2Int(1, 1)),
+                new DoorGrid2D(new Vector2Int(4, 0), new Vector2Int(4, 1)),
             ]
         );
 

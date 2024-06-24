@@ -6,8 +6,9 @@ public enum RoomType
     GateHor,
     Corridor,
     Connector,
+    LargeConnector,
     Misc,
     Safe,
     Euclid,
-    Keter
+    Keter,
 }

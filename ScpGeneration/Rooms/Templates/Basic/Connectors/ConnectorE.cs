@@ -8,7 +8,7 @@ public class ConnectorE : RoomTemplate
 {
     public override RoomTemplateGrid2D Get()
     {
-        PolygonGrid2D corridorOutline = PolygonGrid2D.GetSquare(10);
+        PolygonGrid2D corridorOutline = PolygonGrid2D.GetRectangle(8, 3);
 
         IDoorModeGrid2D corridorDoors = new SimpleDoorModeGrid2D(1, 1);
 
