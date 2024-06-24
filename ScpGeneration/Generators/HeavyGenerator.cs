@@ -14,9 +14,7 @@ public class HeavyGenerator : Generator<Room>
     private const int EuclidNum = 6;
     private const int SafeNum = 2;
     private const int MiscNum = 2;
-    private const int ConnectorsNum = 8;
-    private readonly Range<int> _corridorsRange = new(16, 21);
-    private readonly int _corridorsNum;
+    private readonly Range<int> _scpConnectorRange = new(1, 4);
     private const int GatesNum = 2;
 
     private const int MaxConnectorSlots = 4;
@@ -39,7 +37,6 @@ public class HeavyGenerator : Generator<Room>
 
     public HeavyGenerator(int seed) : base(seed)
     {
-        _corridorsNum = new Random(seed + 100).Next(_corridorsRange.Minimum, _corridorsRange.Maximum);
         _descriptions = new Dictionary<RoomType, RoomDescriptionGrid2D>
         {
             { RoomType.GateVer, _vertGates },
@@ -55,18 +52,16 @@ public class HeavyGenerator : Generator<Room>
 
     public override LevelDescriptionGrid2D<Room> GetLevelDescription()
     {
-        InitializeRooms();
-        ConnectHeavyGates();
         CreateConnectors();
         _graph.RemoveIsolatedVertices();
-        List<Room> connectors = GetRoomsOfType(RoomType.Connector);
+        /*List<Room> connectors = GetRoomsOfType(RoomType.Connector);
         for (int i = 0; i < connectors.Count - 1; ++i)
         {
             var cor = new Room(_roomCounter, RoomType.Corridor);
             _roomCounter++;
             _graph.AddVertex(cor);
             ConnectRooms(connectors[i], connectors[i + 1], cor);
-        }
+        }*/
 
         LevelDescriptionGrid2D<Room> descriptionGrid2D = new LevelDescriptionGrid2D<Room>();
         foreach (Room? vertex in _graph.Vertices)
@@ -85,20 +80,118 @@ public class HeavyGenerator : Generator<Room>
     protected void CreateConnectors()
     {
         Random random = new Random(SavedSeed + 501);
-        GenerateConnector(random);
+
+        (Room first, Room second, Room Mid) leftBranch = GenerateLeftBranch(random);
+        Room rightBranch = GenerateRightBranch(random);
+
+        Room central = new Room(_roomCounter++, RoomType.Connector);
+        _graph.AddVertex(central);
+        Room centralLeft = new Room(_roomCounter++, RoomType.Connector);
+        _graph.AddVertex(centralLeft);
+        Room centralRight = new Room(_roomCounter++, RoomType.Connector);
+        _graph.AddVertex(centralRight);
+        
+        Room a = new Room(_roomCounter++, RoomType.Corridor);
+        _graph.AddVertex(a);
+        Room b = new Room(_roomCounter++, RoomType.Corridor);
+        _graph.AddVertex(b);
+        
+        Room c = new Room(_roomCounter++, RoomType.Corridor);
+        _graph.AddVertex(c);
+        Room d = new Room(_roomCounter++, RoomType.Corridor);
+        _graph.AddVertex(d);
+        
+        ConnectRooms(leftBranch.Mid, centralLeft, a);
+        ConnectRooms(centralLeft, central, b);
+        
+        ConnectRooms(rightBranch, centralRight, c);
+        ConnectRooms(centralRight, central, d);
     }
 
-    protected Room GenerateConnector(Random random)
+    protected Room GenerateRightBranch(Random rand)
     {
+        List<Room> branch = [];
+
+        int randCount = rand.Next(2, 4); // 2 or 3
+        for (int i = 0; i < randCount; ++i)
+        {
+            branch.Add(GenerateScpConnector(rand));
+        }
         Room connector = new Room(_roomCounter++, RoomType.Connector);
         _graph.AddVertex(connector);
-        int maxDoors = 2;
-        for (int i = 0; i < maxDoors; ++i)
+        ConnectScpRoomsWithConnector(branch, connector);
+
+        return connector;
+    }
+
+
+    protected (Room first, Room second, Room Mid) GenerateLeftBranch(Random rand)
+    {
+        List<Room> firstBranch = [];
+
+        int randCount = rand.Next(2, 4); // 2 or 3
+        for (int i = 0; i < randCount; ++i)
+        {
+            firstBranch.Add(GenerateScpConnector(rand));
+        }
+
+        Room firstConnector = new Room(_roomCounter++, RoomType.Connector);
+        _graph.AddVertex(firstConnector);
+        ConnectScpRoomsWithConnector(firstBranch, firstConnector);
+
+        List<Room> secondBranch = [];
+        randCount = rand.Next(2, 4); // 2 or 3
+        for (int i = 0; i < randCount; ++i)
+        {
+            secondBranch.Add(GenerateScpConnector(rand));
+        }
+
+        Room secondConnector = new Room(_roomCounter++, RoomType.Connector);
+        _graph.AddVertex(secondConnector);
+        ConnectScpRoomsWithConnector(secondBranch, secondConnector);
+
+        Room midConnector = new Room(_roomCounter++, RoomType.Connector);
+        _graph.AddVertex(midConnector);
+        Room aCor = new Room(_roomCounter++, RoomType.Corridor);
+        _graph.AddVertex(aCor);
+        Room bCor = new Room(_roomCounter++, RoomType.Corridor);
+        _graph.AddVertex(bCor);
+        ConnectRooms(firstConnector, midConnector, aCor);
+        ConnectRooms(secondConnector, midConnector, bCor);
+
+        return (firstConnector, secondConnector, midConnector);
+    }
+
+    protected void ConnectScpRoomsWithConnector(List<Room> scpRooms, Room connector)
+    {
+        foreach (Room scp in scpRooms)
         {
             Room corridor = new Room(_roomCounter++, RoomType.Corridor);
             _graph.AddVertex(corridor);
-            Room scp = GenerateRandomScpRoom(random);
+
             ConnectRooms(connector, scp, corridor);
+        }
+    }
+
+    protected Room GenerateScpConnector(Random random)
+    {
+        Room connector = new Room(_roomCounter++, RoomType.Connector);
+        _graph.AddVertex(connector);
+        int maxDoors = random.Next(_scpConnectorRange.Minimum, _scpConnectorRange.Maximum);
+        for (int i = 0; i < maxDoors; ++i)
+        {
+            Room scp = GenerateRandomScpRoom(random);
+            if (random.Next(0, 2) == 0)
+            {
+                Room corridor = new Room(_roomCounter++, RoomType.Corridor);
+                _graph.AddVertex(corridor);
+
+                ConnectRooms(connector, scp, corridor);
+            }
+            else
+            {
+                ConnectRooms(scp, connector);
+            }
         }
 
         return connector;
@@ -148,41 +241,6 @@ public class HeavyGenerator : Generator<Room>
         }
     }
 
-    protected void ConnectHeavyGates()
-    {
-        // Collect all gates
-        List<Room> gates = GetRoomsOfType(RoomType.GateHor);
-        gates.AddRange(GetRoomsOfType(RoomType.GateVer));
-
-        foreach (Room gate in gates)
-        {
-            Room connector = new Room(_roomCounter++, RoomType.Connector);
-            _graph.AddVertex(connector);
-
-            Room corridor = new Room(_roomCounter++, RoomType.Corridor);
-            _graph.AddVertex(corridor);
-            ConnectRooms(gate, connector, corridor);
-        }
-    }
-
-
-    protected void InitializeRooms()
-    {
-        _roomCounter = 0;
-        _graph = new();
-        AddRooms(RoomType.GateVer, GatesNum);
-        AddRooms(RoomType.GateHor, GatesNum);
-    }
-
-    protected void AddRooms(RoomType roomType, int n)
-    {
-        for (int i = 0; i < n; ++i)
-        {
-            _graph.AddVertex(new Room(_roomCounter, roomType));
-            _roomCounter++;
-        }
-    }
-
     protected void ConnectRooms(Room a, Room b)
     {
         _graph.AddEdge(a, b);
@@ -194,7 +252,7 @@ public class HeavyGenerator : Generator<Room>
         _graph.AddEdge(corridor, b);
     }
 
-    List<Room> GetFreeCorridors()
+    protected List<Room> GetFreeCorridors()
     {
         List<Room> res = [];
         foreach (var room in _graph.Vertices)
@@ -211,7 +269,7 @@ public class HeavyGenerator : Generator<Room>
         return res;
     }
 
-    List<Room> GetFreeConnectors()
+    protected List<Room> GetFreeConnectors()
     {
         List<Room> res = [];
         foreach (var room in _graph.Vertices)

@@ -4,11 +4,11 @@ using Edgar.GraphBasedGenerator.Grid2D;
 
 namespace ScpGeneration.Rooms.Templates.Basic.Room;
 
-public partial class HeavyEuclidRoom : RoomTemplate
+public class HeavyEuclidRoom : RoomTemplate
 {
     public override RoomTemplateGrid2D Get()
     {
-        PolygonGrid2D? outline = PolygonGrid2D.GetRectangle(20, 16);
+        PolygonGrid2D? outline = PolygonGrid2D.GetRectangle(10, 7);
         IDoorModeGrid2D doors = new ManualDoorModeGrid2D([
             new DoorGrid2D(new Vector2Int(0, 5), new Vector2Int(0, 6))
         ]);

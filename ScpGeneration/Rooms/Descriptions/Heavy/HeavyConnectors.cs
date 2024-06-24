@@ -14,7 +14,8 @@ public class HeavyConnectors : IRoomDescription
                 new ConnectorA().Get(),
                 new ConnectorB().Get(),
                 new ConnectorC().Get(),
-                new ConnectorD().Get()
+                new ConnectorD().Get(),
+                new ConnectorE().Get(),
             ]);
     }
 }

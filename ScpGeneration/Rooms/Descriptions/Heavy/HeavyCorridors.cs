@@ -14,7 +14,8 @@ public class HeavyCorridors : IRoomDescription
                 new CorridorA().Get(),
                 new CorridorB().Get(),
                 new CorridorC().Get(),
-                new CorridorD().Get()
+                new CorridorD().Get(),
+                new CorridorE().Get()
             ]);
     }
 }

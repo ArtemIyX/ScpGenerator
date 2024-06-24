@@ -4,7 +4,7 @@ using Edgar.GraphBasedGenerator.Grid2D;
 
 namespace ScpGeneration.Rooms.Templates.Basic.Connectors;
 
-public partial class ConnectorC : RoomTemplate
+public class ConnectorC : RoomTemplate
 {
     public override RoomTemplateGrid2D Get()
     {
